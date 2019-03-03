@@ -5,14 +5,14 @@
  */
 package server;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.DatagramPacket;
+import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.ByteBuffer;
-import javax.imageio.ImageIO;
-import util.FileUtil;
 
 /**
  *
@@ -21,23 +21,28 @@ import util.FileUtil;
 public class TCPServer {
 
     public static void main(String[] args) throws Exception {
-       
+        ServerSocket serverSocket = new ServerSocket(8800);
+
+        while (true) {
+            Socket socket = serverSocket.accept();
+            InputStreamReader inputStream = new InputStreamReader(socket.getInputStream());
+            InputStream in = socket.getInputStream();
+            OutputStream out = new FileOutputStream("C:\\Users\\Goshgar\\Desktop\\et.exe");
+            byte buffer[] = new byte[8192];
+            int bytesRead = 0;
+            while ((bytesRead = in.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+            }
+            out.close();
+            System.out.println("All Done!!");
+        }
+
     }
 
-    public static String send(String path) throws Exception {
-        Socket socket = new Socket("192.168.137.159", 8080);
-        OutputStream outputStream = socket.getOutputStream();
-        File file = new File(path);
-        BufferedImage image = ImageIO.read(file);
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ImageIO.write(image, FileUtil.getExtension(path), byteArrayOutputStream);
-        byte[] size = ByteBuffer.allocate(4).putInt(byteArrayOutputStream.size()).array();
-        outputStream.write(size);
-        outputStream.write(byteArrayOutputStream.toByteArray());
-        outputStream.flush();
-        System.out.println("Flushed: " + System.currentTimeMillis());
-        System.out.println("Closing: " + System.currentTimeMillis());
-        socket.close();
-        return file.getName();
+    public static void receive(String newPath, byte lines[]) throws Exception {
+        try (FileOutputStream stream = new FileOutputStream(newPath)) {
+            stream.write(lines);
+        }
+
     }
 }

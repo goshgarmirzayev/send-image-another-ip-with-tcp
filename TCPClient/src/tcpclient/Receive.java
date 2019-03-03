@@ -114,13 +114,7 @@ public class Receive extends javax.swing.JFrame {
     }//GEN-LAST:event_newPathActionPerformed
 
     private void receiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_receiveActionPerformed
-        try {
-            TCPClient.receive(newPath.getText());
-        } catch (Exception ex) {
-            Logger.getLogger(Receive.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        newImage.setIcon(new ImageIcon(new ImageIcon(newPath.getText()).getImage().getScaledInstance(120, 120, Image.SCALE_DEFAULT)));
-
+      
     }//GEN-LAST:event_receiveActionPerformed
 
     /**

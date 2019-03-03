@@ -5,14 +5,10 @@
  */
 package tcpclient;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
-import java.io.InputStream;
-import java.net.ServerSocket;
+import java.io.FileInputStream;
 import java.net.Socket;
-import java.nio.ByteBuffer;
-import javax.imageio.ImageIO;
 
 /**
  *
@@ -21,25 +17,22 @@ import javax.imageio.ImageIO;
 public class TCPClient {
 
     public static void main(String argv[]) throws Exception {
+        try (Socket socket = new Socket("localhost", 8800)) {
+            DataOutputStream dat = new DataOutputStream(socket.getOutputStream());
+            byte bytes[] = getAllBystesFromFIle("C:\\Program Files\\NetBeans 8.2\\bin\\netbeans64.exe");
+            dat.write(bytes);
+        }
 
     }
 
-    public static String receive(String newPath) throws Exception {
-        File file;
-        try (ServerSocket serverSocket = new ServerSocket(8080)) {
-            Socket socket = serverSocket.accept();
-            InputStream inputStream = socket.getInputStream();
-            byte[] sizeAr = new byte[4];
-
-            inputStream.read(sizeAr);
-            int size = ByteBuffer.wrap(sizeAr).asIntBuffer().get();
-            byte[] imageAr = new byte[size];
-            inputStream.read(imageAr);
-            BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageAr));
-            file = new File(newPath);
-            ImageIO.write(image, "jpg", file);
+    public static byte[] getAllBystesFromFIle(String filePath) throws Exception {
+        byte[] bysteArray = null;
+        try (FileInputStream fis = new FileInputStream(filePath);) {
+            File file = new File(filePath);
+            bysteArray = new byte[(int) file.length()];
+            fis.read(bysteArray);
         }
 
-        return null;
+        return bysteArray;
     }
 }
